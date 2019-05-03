@@ -147,6 +147,16 @@ def read(file, readmarkers=False, readmarkerlabels=False,
     ----------
     file : file
         Input wav file.
+    readmarkers : bool
+    readmarkerlabels : bool
+    readmarkerslist : bool
+    readloops : bool
+    readpitch : bool
+    normalized : bool
+    forcestereo : bool
+    log : bool
+    readlistinfo : bool
+    readunsupported : bool, optional
 
     Returns
     -------
@@ -154,6 +164,12 @@ def read(file, readmarkers=False, readmarkerlabels=False,
         Sample rate of wav file
     data : numpy array
         Data read from wav file
+    bits : int
+        The bit depth of the file (since WAV can technically support any bit
+        depth, but numpy arrays are inherently 8, 16, or 32 bits)
+    metadata : dict
+        A dictionary containing metadata from the file:
+
 
     Notes
     -----
