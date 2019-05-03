@@ -195,9 +195,9 @@ def read(file, readmarkers=False, readmarkerlabels=False,
                                                     'label': ''})
     unsupported = {}
     loops = []
-    list_info_index = ["IARL", "IART", "ICMS", "ICMT", "ICOP",  "ICRD", "IENG",
+    list_info_index = {"IARL", "IART", "ICMS", "ICMT", "ICOP",  "ICRD", "IENG",
                        "IGNR", "IKEY", "IMED", "INAM", "IPRD", "ISBJ", "ISFT",
-                       "ISRC", "ISRF", "ITCH"]
+                       "ISRC", "ISRF", "ITCH"}
     info = {}
     pitch = 0.0
     while (fid.tell() < fsize):
