@@ -200,6 +200,9 @@ def read(file, readmarkers=False, readmarkerlabels=False,
     #_cuelabels = []
     _markersdict = collections.defaultdict(lambda: {'position': -1,
                                                     'label': ''})
+    _regionsdict = collections.defaultdict(lambda: {'position': -1,
+                                                    'length': -1,
+                                                    'label': ''})
     unsupported = {}
     loops = []
     list_info_index = {"IARL", "IART", "ICMS", "ICMT", "ICOP",  "ICRD", "IENG",
@@ -238,6 +241,17 @@ def read(file, readmarkers=False, readmarkerlabels=False,
             label = fid.read(size-4).rstrip(bytes('\x00', 'UTF-8'))  # remove the trailing null characters
             #_cuelabels.append(label)
             _markersdict[idx]['label'] = label  # needed to match labels and markers
+
+        elif chunk_id == b'ltxt':
+            str1 = fid.read(24)
+            # TODO: cueID instead of "idx"
+            (size, idx, length, purpose, country, language, dialect,
+             codepage) = struct.unpack('<iiiihhhh', str1)
+            size = size + (size % 2)  # the size should be even, see WAV specification, e.g. 16=>16, 23=>24
+            label = fid.read(size-4).rstrip(bytes('\x00', 'UTF-8'))  # remove the trailing null characters
+            #_cuelabels.append(label)
+            _regionsdict[idx]['label'] = label  # needed to match labels and markers
+            _regionsdict[idx]['length'] = length
 
         elif chunk_id == b'smpl':
             str1 = fid.read(40)
@@ -278,6 +292,7 @@ def read(file, readmarkers=False, readmarkerlabels=False,
     return (rate, data, bits, {'cue': _cue,
                                'cuelabels': _cuelabels,
                                'markerslist': _markerslist,
+                               'regionslist': _regionslist,
                                'loops': loops,
                                'pitch': pitch,
                                'info': info,
