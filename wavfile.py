@@ -227,6 +227,8 @@ def read(file, readmarkers=False, readmarkerlabels=False,
                  sampleoffset) = struct.unpack('<iiiiii', str1)
                 #_cue.append(position)
                 _markersdict[idx]['position'] = position  # needed to match labels and markers
+                _regionsdict[idx]['position'] = position  # needed to match labels and markers
+                # TODO: it would be better to collect this info separately and then combine it
 
         elif chunk_id == b'LIST':
             str1 = fid.read(8)
@@ -236,11 +238,12 @@ def read(file, readmarkers=False, readmarkerlabels=False,
             info[ chunk_id_str ] = s.decode('UTF-8')
         elif chunk_id == b'labl':
             str1 = fid.read(8)
-            size, idx = struct.unpack('<ii',str1)
+            size, idx = struct.unpack('<ii', str1)
             size = size + (size % 2)  # the size should be even, see WAV specification, e.g. 16=>16, 23=>24
             label = fid.read(size-4).rstrip(bytes('\x00', 'UTF-8'))  # remove the trailing null characters
             #_cuelabels.append(label)
             _markersdict[idx]['label'] = label  # needed to match labels and markers
+            _regionsdict[idx]['label'] = label  # needed to match labels and markers
 
         elif chunk_id == b'ltxt':
             str1 = fid.read(24)
@@ -248,9 +251,12 @@ def read(file, readmarkers=False, readmarkerlabels=False,
             (size, idx, length, purpose, country, language, dialect,
              codepage) = struct.unpack('<iiiihhhh', str1)
             size = size + (size % 2)  # the size should be even, see WAV specification, e.g. 16=>16, 23=>24
-            label = fid.read(size-4).rstrip(bytes('\x00', 'UTF-8'))  # remove the trailing null characters
+            # TODO: algorithmize this instead of explicit numbers
+            if size-4-4-4-2-2-2-2 != 0:
+                raise RuntimeError("I don't understand")
+            label = fid.read(size-4-4-4-2-2-2-2).rstrip(bytes('\x00', 'UTF-8'))  # remove the trailing null characters
             #_cuelabels.append(label)
-            _regionsdict[idx]['label'] = label  # needed to match labels and markers
+#            _regionsdict[idx]['label'] = label  # needed to match labels and markers
             _regionsdict[idx]['length'] = length
 
         elif chunk_id == b'smpl':
@@ -284,15 +290,19 @@ def read(file, readmarkers=False, readmarkerlabels=False,
     if data.ndim == 1 and forcestereo:
         data = numpy.column_stack((data, data))
 
-    _markerslist = sorted([_markersdict[l] for l in _markersdict],
+#    _markerslist = sorted([_markersdict[l] for l in _markersdict],
+#                          key=lambda k: k['position'])  # sort by position
+    _regionslist = sorted([_regionsdict[l] for l in _regionsdict],
                           key=lambda k: k['position'])  # sort by position
-    _cue = [m['position'] for m in _markerslist]
-    _cuelabels = [m['label'] for m in _markerslist]
+#    _cue = [m['position'] for m in _markerslist]
+#    _cuelabels = [m['label'] for m in _markerslist]
 
-    return (rate, data, bits, {'cue': _cue,
-                               'cuelabels': _cuelabels,
-                               'markerslist': _markerslist,
-                               'regionslist': _regionslist,
+    return (rate, data, bits, {
+#            'cue': _cue,
+#                               'cuelabels': _cuelabels,
+                               'markerslist': #_markerslist,
+#                               'regionslist':
+                                   _regionslist,
                                'loops': loops,
                                'pitch': pitch,
                                'info': info,
