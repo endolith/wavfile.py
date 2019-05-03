@@ -136,7 +136,10 @@ def _read_riff_chunk(fid):
     return fsize
 
 
-def read(file, readmarkers=False, readmarkerlabels=False, readmarkerslist=False, readloops=False, readpitch=False, normalized=False, forcestereo=False, log=True, readlistinfo=True, readunsupported=True):
+def read(file, readmarkers=False, readmarkerlabels=False,
+         readmarkerslist=False, readloops=False, readpitch=False,
+         normalized=False, forcestereo=False, log=True, readlistinfo=True,
+         readunsupported=True):
     """
     Return the sample rate (in samples/sec) and data from a WAV file
 
@@ -172,10 +175,13 @@ def read(file, readmarkers=False, readmarkerlabels=False, readmarkerslist=False,
     bits = 8
     #_cue = []
     #_cuelabels = []
-    _markersdict = collections.defaultdict(lambda: {'position': -1, 'label': ''})
+    _markersdict = collections.defaultdict(lambda: {'position': -1,
+                                                    'label': ''})
     unsupported = {}
     loops = []
-    list_info_index = ["IARL", "IART", "ICMS", "ICMT", "ICOP",  "ICRD", "IENG", "IGNR", "IKEY", "IMED", "INAM", "IPRD", "ISBJ", "ISFT", "ISRC", "ISRF", "ITCH"]
+    list_info_index = ["IARL", "IART", "ICMS", "ICMT", "ICOP",  "ICRD", "IENG",
+                       "IGNR", "IKEY", "IMED", "INAM", "IPRD", "ISBJ", "ISFT",
+                       "ISRC", "ISRF", "ITCH"]
     info = {}
     pitch = 0.0
     while (fid.tell() < fsize):
