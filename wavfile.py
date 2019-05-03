@@ -257,15 +257,13 @@ def read(file, readmarkers=False, readmarkerlabels=False,
     _cue = [m['position'] for m in _markerslist]
     _cuelabels = [m['label'] for m in _markerslist]
 
-    return (rate, data, bits, ) \
-        + ((_cue,) if readmarkers else ()) \
-        + ((_cuelabels,) if readmarkerlabels else ()) \
-        + ((_markerslist,) if readmarkerslist else ()) \
-        + ((loops,) if readloops else ()) \
-        + ((pitch,) if readpitch else ()) \
-        + ((info,) if readlistinfo else ()) \
-        + ((unsupported,) if readunsupported else ())
-
+    return (rate, data, bits, {'cue': _cue,
+                               'cuelabels': _cuelabels,
+                               'markerslist': _markerslist,
+                               'loops': loops,
+                               'pitch': pitch,
+                               'info': info,
+                               'unsupported': unsupported})
 
 
 def write(filename, rate, data, bitrate=None, markers=None, loops=None, pitch=None, normalized=False, infos=None, unsupported=None):
