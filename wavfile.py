@@ -248,6 +248,9 @@ def read(file, readmarkers=False, readmarkerlabels=False,
             pitch = 440. * 2 ** ((midiunitynote + cents - 69.)/12)
             for i in range(numsampleloops):
                 str1 = fid.read(24)
+                # TODO: Named tuple simpler?
+                # or just use 'cuepointid':tmp[0]
+                # Or can use zip/dict/something!
                 (cuepointid, datatype, start, end, fraction,
                  playcount) = struct.unpack('<iiiiii', str1)
                 loops.append({'cuepointid': cuepointid, 'datatype': datatype,
