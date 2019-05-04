@@ -252,9 +252,9 @@ def read(file, readmarkers=False, readmarkerlabels=False,
              codepage) = struct.unpack('<iiiihhhh', str1)
             size = size + (size % 2)  # the size should be even, see WAV specification, e.g. 16=>16, 23=>24
             # TODO: algorithmize this instead of explicit numbers
-            if size-4-4-4-2-2-2-2 != 0:
+            if size-20 != 0:
                 raise RuntimeError("I don't understand")
-            label = fid.read(size-4-4-4-2-2-2-2).rstrip(bytes('\x00', 'UTF-8'))  # remove the trailing null characters
+            label = fid.read(size-20).rstrip(bytes('\x00', 'UTF-8'))  # remove the trailing null characters
             #_cuelabels.append(label)
 #            _regionsdict[idx]['label'] = label  # needed to match labels and markers
             _regionsdict[idx]['length'] = length
