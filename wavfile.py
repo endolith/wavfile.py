@@ -55,6 +55,10 @@ class WavFileWarning(UserWarning):
     pass
 
 
+WavMetadata = collections.namedtuple('WavMetadata',
+                                     ['markerslist', 'loops', 'pitch', 'info',
+                                      'unsupported'])
+
 _ieee = False
 
 
@@ -174,9 +178,30 @@ def read(file, readmarkers=False, readmarkerlabels=False,
     bits : int
         The bit depth of the file (since WAV can technically support any bit
         depth, but numpy arrays are inherently 8, 16, or 32 bits)
-    metadata : dict
-        A dictionary containing metadata from the file:
+    metadata : WavMetadata
+        The metadata of the WAV file as a WavMetadata namedtuple.  Attributes
+        are:
 
+            ``markerslist``
+                A list of dicts, each containing a cue or range in the WAV.  Each entry has keys:
+
+                    - The first item of the list. Lorem ipsum dolor sit amet, consectetur
+                      adipiscing elit.
+
+                      Proin nulla magna, egestas quis nisi id, dictum mollis diam. Duis lorem
+                      eros, tempor egestas ligula eget, dapibus posuere justo.
+
+                    - The second item of the list.
+
+
+            ``loops``
+                test
+            ``pitch``
+                pi
+            ``info``
+                fdsf
+            ``unsupported``
+                fdsf
 
     Notes
     -----
@@ -305,16 +330,9 @@ def read(file, readmarkers=False, readmarkerlabels=False,
 #    _cue = [m['position'] for m in _markerslist]
 #    _cuelabels = [m['label'] for m in _markerslist]
 
-    return (rate, data, bits, {
-#            'cue': _cue,
-#                               'cuelabels': _cuelabels,
-                               'markerslist': #_markerslist,
-#                               'regionslist':
-                                   _regionslist,
-                               'loops': loops,
-                               'pitch': pitch,
-                               'info': info,
-                               'unsupported': unsupported})
+    return (rate, data, bits, WavMetadata(markerslist=_regionslist,
+                                          loops=loops, pitch=pitch, info=info,
+                                          unsupported=unsupported))
 
 
 def write(filename, rate, data, bitrate=None, markers=None, loops=None,
