@@ -251,10 +251,18 @@ def read(file, readmarkers=False, readmarkerlabels=False,
             (size, idx, length, purpose, country, language, dialect,
              codepage) = struct.unpack('<iiiihhhh', str1)
             size = size + (size % 2)  # the size should be even, see WAV specification, e.g. 16=>16, 23=>24
-            # TODO: algorithmize this instead of explicit numbers
-            if size-20 != 0:
-                raise RuntimeError("I don't understand")
             label = fid.read(size-20).rstrip(bytes('\x00', 'UTF-8'))  # remove the trailing null characters
+            if label and not _regionsdict[idx]['label']:
+                # Use ltxt if labl is missing
+                _regionsdict[idx]['label'] = label
+            elif label != _regionsdict[idx]['label']:
+                # If labl and ltxt conflict
+                warnings.warn('This file has conflicting ltxt and labl chunks '
+                              'for the same cue. The ltxt was discarded.')
+            else:
+                # Otherwise, labl and ltxt match, so leave unchanged
+                pass
+
             #_cuelabels.append(label)
 #            _regionsdict[idx]['label'] = label  # needed to match labels and markers
             _regionsdict[idx]['length'] = length
