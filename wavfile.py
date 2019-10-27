@@ -248,11 +248,11 @@ def read(file, readmarkers=False, readmarkerlabels=False,
             size, numcue = struct.unpack('<ii', str1)
             for c in range(numcue):
                 str1 = fid.read(24)
-                (idx, position, datachunkid, chunkstart, blockstart,
+                (cueID, position, datachunkid, chunkstart, blockstart,
                  sampleoffset) = struct.unpack('<iiiiii', str1)
                 #_cue.append(position)
-                _markersdict[idx]['position'] = position  # needed to match labels and markers
-                _regionsdict[idx]['position'] = position  # needed to match labels and markers
+                _markersdict[cueID]['position'] = position  # needed to match labels and markers
+                _regionsdict[cueID]['position'] = position  # needed to match labels and markers
                 # TODO: it would be better to collect this info separately and then combine it
 
         elif chunk_id == b'LIST':
@@ -263,24 +263,23 @@ def read(file, readmarkers=False, readmarkerlabels=False,
             info[ chunk_id_str ] = s.decode('UTF-8')
         elif chunk_id == b'labl':
             str1 = fid.read(8)
-            size, idx = struct.unpack('<ii', str1)
+            size, cueID = struct.unpack('<ii', str1)
             size = size + (size % 2)  # the size should be even, see WAV specification, e.g. 16=>16, 23=>24
             label = fid.read(size-4).rstrip(bytes('\x00', 'UTF-8'))  # remove the trailing null characters
             #_cuelabels.append(label)
-            _markersdict[idx]['label'] = label  # needed to match labels and markers
-            _regionsdict[idx]['label'] = label  # needed to match labels and markers
+            _markersdict[cueID]['label'] = label  # needed to match labels and markers
+            _regionsdict[cueID]['label'] = label  # needed to match labels and markers
 
         elif chunk_id == b'ltxt':
             str1 = fid.read(24)
-            # TODO: cueID instead of "idx"
-            (size, idx, length, purpose, country, language, dialect,
+            (size, cueID, length, purpose, country, language, dialect,
              codepage) = struct.unpack('<iiiihhhh', str1)
             size = size + (size % 2)  # the size should be even, see WAV specification, e.g. 16=>16, 23=>24
             label = fid.read(size-20).rstrip(bytes('\x00', 'UTF-8'))  # remove the trailing null characters
-            if label and not _regionsdict[idx]['label']:
+            if label and not _regionsdict[cueID]['label']:
                 # Use ltxt if labl is missing
-                _regionsdict[idx]['label'] = label
-            elif label != _regionsdict[idx]['label']:
+                _regionsdict[cueID]['label'] = label
+            elif label != _regionsdict[cueID]['label']:
                 # If labl and ltxt conflict
                 warnings.warn('This file has conflicting ltxt and labl chunks '
                               'for the same cue. The ltxt was discarded.')
@@ -289,8 +288,8 @@ def read(file, readmarkers=False, readmarkerlabels=False,
                 pass
 
             #_cuelabels.append(label)
-#            _regionsdict[idx]['label'] = label  # needed to match labels and markers
-            _regionsdict[idx]['length'] = length
+#            _regionsdict[cueID]['label'] = label  # needed to match labels and markers
+            _regionsdict[cueID]['length'] = length
 
         elif chunk_id == b'smpl':
             str1 = fid.read(40)
