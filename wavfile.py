@@ -324,12 +324,12 @@ def read(file, readmarkers=False, readmarkerlabels=False,
 
 #    _markerslist = sorted([_markersdict[l] for l in _markersdict],
 #                          key=lambda k: k['position'])  # sort by position
-    _regionslist = sorted([_regionsdict[l] for l in _regionsdict],
-                          key=lambda k: k['position'])  # sort by position
+#    _regionslist = sorted([_regionsdict[l] for l in _regionsdict],
+#                          key=lambda k: k['position'])  # sort by position
 #    _cue = [m['position'] for m in _markerslist]
 #    _cuelabels = [m['label'] for m in _markerslist]
 
-    return (rate, data, bits, WavMetadata(markerslist=_regionslist,
+    return (rate, data, bits, WavMetadata(markerslist=dict(_regionsdict),
                                           loops=loops, pitch=pitch, info=info,
                                           unsupported=unsupported))
 
